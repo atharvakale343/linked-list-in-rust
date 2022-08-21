@@ -6,5 +6,5 @@ A attempt at creating a doubly-linked list in Rust. This is for recreational pur
 
 # Quick Start
 ```console 
-$ cargo run
+cargo run
 ```
