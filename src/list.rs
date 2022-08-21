@@ -32,6 +32,7 @@ impl<T> Node<T> {
 pub(crate) struct LinkedList<T> {
     head: Option<Rc<RefCell<Node<T>>>>,
     tail: Option<Rc<RefCell<Node<T>>>>,
+    len: usize,
 }
 
 impl<T> fmt::Debug for LinkedList<T>
@@ -58,10 +59,11 @@ impl<T> LinkedList<T> {
         Self {
             head: None,
             tail: None,
+            len: 0,
         }
     }
 
-    pub fn insert_first(&mut self, arg: T) {
+    pub fn push_front(&mut self, arg: T) {
         if let Some(curr_head) = &self.head {
             let new_node = Rc::new(RefCell::new(Node::new(arg, Some(curr_head.clone()), None)));
             curr_head.borrow_mut().prev = Some(new_node.clone());
@@ -72,9 +74,10 @@ impl<T> LinkedList<T> {
             self.head = Some(new_node.clone());
             self.tail = Some(new_node);
         }
+        self.len += 1;
     }
 
-    pub fn pop_first(&mut self) -> T {
+    pub fn pop_front(&mut self) -> T {
         if let Some(curr_head) = self.head.clone() {
             assert!(self.tail.is_some());
             let curr_tail = self.tail.as_ref().unwrap();
@@ -88,13 +91,14 @@ impl<T> LinkedList<T> {
             }
             let popped = Rc::try_unwrap(curr_head)
                 .unwrap_or_else(|_| panic!("The curr_head was shared, failed to unwrap"));
+            self.len -= 1;
             popped.into_inner().data
         } else {
             panic!("Underflow")
         }
     }
 
-    pub fn insert_last(&mut self, arg: T) {
+    pub fn push_back(&mut self, arg: T) {
         if let Some(curr_tail) = &self.tail {
             let new_node = Rc::new(RefCell::new(Node::new(arg, None, Some(curr_tail.clone()))));
             curr_tail.borrow_mut().next = Some(new_node.clone());
@@ -105,9 +109,10 @@ impl<T> LinkedList<T> {
             self.head = Some(new_node.clone());
             self.tail = Some(new_node);
         }
+        self.len += 1;
     }
 
-    pub fn pop_last(&mut self) -> T {
+    pub fn pop_back(&mut self) -> T {
         if let Some(curr_tail) = self.tail.clone() {
             assert!(self.head.is_some());
             let curr_head = self.head.as_ref().unwrap();
@@ -121,9 +126,18 @@ impl<T> LinkedList<T> {
             }
             let popped = Rc::try_unwrap(curr_tail)
                 .unwrap_or_else(|_| panic!("The last_elem was shared, failed to unwrap"));
+            self.len -= 1;
             popped.into_inner().data
         } else {
             panic!("Underflow")
         }
+    }
+
+    pub fn len(&self) -> usize {
+        self.len
+    }
+
+    pub fn clear(&mut self) {
+        *self = Self::new();
     }
 }
