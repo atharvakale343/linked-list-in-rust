@@ -46,9 +46,9 @@ where
             writeln!(f, "head: None")?;
         }
         if let Some(tail) = &self.tail {
-            writeln!(f, "tail: {}", tail.borrow().data)
+            write!(f, "tail: {}", tail.borrow().data)
         } else {
-            writeln!(f, "tail: None")
+            write!(f, "tail: None")
         }
     }
 }
